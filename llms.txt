@@ -1,0 +1,55 @@
+# peage — fiat pay-per-call for the agent economy
+
+peage is a toll booth: agents hold prepaid wallets (funded by card via Stripe),
+and any API can charge a wallet with one HTTP call. No crypto, no subscriptions,
+no OAuth. Everything below is curl-able. Base URL: https://peage.intrane.fr
+
+## If you are an AGENT (you want to pay for API calls)
+
+1. Create a wallet (save the token — shown once):
+   curl -s -X POST https://peage.intrane.fr/v1/wallets -d '{"email":"you@example.com"}'
+2. Fund it (returns a Stripe Checkout URL — open it or hand it to your human operator):
+   curl -s -X POST https://peage.intrane.fr/v1/topup -H 'Authorization: Bearer pw_...' -d '{"amount_cents":1000}'
+3. Check balance / history:
+   curl -s https://peage.intrane.fr/v1/wallet -H 'Authorization: Bearer pw_...'
+4. Pay a metered API: pass your wallet token in the header the merchant asks for
+   (convention: X-Peage-Wallet). The merchant charges your wallet per call.
+5. Safety rails (you control them): per-charge cap (default 100 cents) and per-merchant
+   daily cap (default 1000 cents):
+   curl -s -X POST https://peage.intrane.fr/v1/wallet/limits -H 'Authorization: Bearer pw_...' -d '{"max_charge_cents":50,"daily_cap_cents":500}'
+6. Try it now — a real 1-cent metered endpoint:
+   curl -s https://peage.intrane.fr/demo/fortune -H 'X-Peage-Wallet: pw_...'
+
+## If you are a MERCHANT (you built an API and want to get paid per call)
+
+1. Register (save the key — shown once):
+   curl -s -X POST https://peage.intrane.fr/v1/merchants -d '{"email":"you@example.com","name":"my api"}'
+2. Ask callers for their wallet token (header X-Peage-Wallet), then charge per request:
+   curl -s -X POST https://peage.intrane.fr/v1/charge -H 'Authorization: Bearer pm_...' \
+        -d '{"wallet_token":"pw_...","amount_cents":2,"memo":"GET /search","idempotency_key":"req-123"}'
+   -> 200 {charge_id, receipt, wallet_balance_cents} | 402 insufficient_funds (tell the caller to top up)
+3. If the caller sent no wallet: reply HTTP 402 with a JSON body pointing here, e.g.
+   {"pay":{"rail":"peage","url":"https://peage.intrane.fr","price_cents":2,"header":"X-Peage-Wallet"}}
+4. Your balance / volume:
+   curl -s https://peage.intrane.fr/v1/merchant -H 'Authorization: Bearer pm_...'
+   Payouts are manual at month end (operator-run). Platform fee: 10% per charge.
+
+## Receipts
+
+Every charge returns a signed receipt. Anyone can verify one:
+   curl -s 'https://peage.intrane.fr/v1/receipts?r=c_....<hmac>'
+
+## Endpoints
+
+POST /v1/wallets {email?}                            -> {wallet_id, token}
+GET  /v1/wallet            Bearer wallet token        -> balance, caps, recent charges
+POST /v1/wallet/limits     Bearer wallet token        -> set max_charge_cents / daily_cap_cents
+POST /v1/topup             Bearer wallet token        -> {url} Stripe Checkout (min 500, max 20000 cents)
+GET  /v1/topup/claim?sid=cs_...                       -> credit a paid session (idempotent)
+POST /v1/merchants {email, name}                      -> {merchant_id, key}
+GET  /v1/merchant          Bearer merchant key        -> balance, volume, recent charges
+POST /v1/charge            Bearer merchant key        -> debit wallet, credit merchant (200 | 402 | 403)
+GET  /v1/receipts?r=<receipt>                         -> public receipt verification
+GET  /demo/fortune         X-Peage-Wallet: <token>    -> 1-cent demo toll
+GET  /guide                                           -> this contract as JSON
+GET  /_health                                         -> liveness
