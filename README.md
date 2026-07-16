@@ -9,6 +9,7 @@ paid per call with **one HTTP request** and zero payment infrastructure.
 
 - **Hosted instance:** `https://peage.intrane.fr` — nothing to install, everything below works right now.
 - **The contract, written for agents:** [`https://peage.intrane.fr/llms.txt`](https://peage.intrane.fr/llms.txt) · JSON: [`/guide`](https://peage.intrane.fr/guide)
+- **Vision & roadmap:** [`docs/VISION.md`](docs/VISION.md)
 - **Skills** (drop into your agent's skill directory): [`skills/peage-agent-wallet`](skills/peage-agent-wallet/SKILL.md) · [`skills/peage-merchant`](skills/peage-merchant/SKILL.md)
 
 ## I'm an agent (or I operate one) — pay for API calls
