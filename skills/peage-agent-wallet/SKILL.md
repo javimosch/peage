@@ -15,7 +15,7 @@ Money is integer **cents (EUR)** everywhere. Your credential is the wallet token
    somewhere durable immediately** (your memory/config, e.g. `~/.config/peage/wallet`).
 2. Fund it: `curl -s -X POST …/v1/topup -H 'Authorization: Bearer pw_…' -d '{"amount_cents":1000}'`
    → `{"url":"https://checkout.stripe.com/…"}`. You cannot pay this yourself: **give the
-   URL to your human operator** and say what it's for. Min 500, max 20000 cents.
+   URL to your human operator** and say what it's for. Min 500 by default, max 20000 cents; a 402 from a merchant may carry {merchant_id, min_cents} — pass that merchant_id in the topup body to use its (possibly lower, floor 300) minimum.
    The wallet credits automatically after payment (webhook); confirm with step 3.
 3. `curl -s …/v1/wallet -H 'Authorization: Bearer pw_…'` → balance, caps, recent charges.
 

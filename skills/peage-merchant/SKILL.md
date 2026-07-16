@@ -61,6 +61,20 @@ batch (`sha256(account_id + body)` as the key), puts `peage_receipt` in the resp
 and passes peage 402/403 bodies through untouched. Unconfigured or unreachable peage
 falls back to the free cap — metering is additive, never a new failure mode.
 
+## Your top-up minimum
+
+Callers topping up "for" your API (`POST /v1/topup {"amount_cents":…,"merchant_id":"m_…"}`)
+get your configured minimum instead of the 500-cent default. Set it (hard floor 300 —
+Stripe's fixed fee makes smaller card payments uneconomical):
+
+```sh
+curl -s -X POST https://peage.intrane.fr/v1/merchant/limits \
+  -H "Authorization: Bearer $PEAGE_MERCHANT_KEY" -d '{"min_topup_cents":300}'
+```
+
+402 bodies from `/v1/charge` already carry `{merchant_id, min_cents}`, so peage-aware
+callers top up the right amount automatically.
+
 ## Monitoring
 
 `curl -s https://peage.intrane.fr/v1/merchant -H "Authorization: Bearer $PEAGE_MERCHANT_KEY"`

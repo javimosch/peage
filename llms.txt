@@ -10,9 +10,11 @@ no OAuth. Everything below is curl-able. Base URL: https://peage.intrane.fr
    curl -s -X POST https://peage.intrane.fr/v1/wallets -d '{"email":"you@example.com"}'
 2. Fund it (returns a Stripe Checkout URL — open it or hand it to your human operator):
    curl -s -X POST https://peage.intrane.fr/v1/topup -H 'Authorization: Bearer pw_...' -d '{"amount_cents":1000}'
-   All amounts are EUR cents (500..20000); the rail is EUR-only. Cards in any currency
-   work — the issuer converts. Passing "currency" other than eur is a 400; out-of-range
-   amounts are clamped and reported back as adjusted_from.
+   All amounts are EUR cents; the rail is EUR-only. Cards in any currency work — the
+   issuer converts. Passing "currency" other than eur is a 400; out-of-range amounts
+   are clamped and reported back as adjusted_from. The minimum is per merchant
+   (default 500, hard floor 300): pass "merchant_id" to use that merchant's minimum
+   (a 402 from /v1/charge tells you both). Max 20000.
 3. Check balance / history:
    curl -s https://peage.intrane.fr/v1/wallet -H 'Authorization: Bearer pw_...'
 4. Pay a metered API: pass your wallet token in the header the merchant asks for
@@ -47,10 +49,11 @@ Every charge returns a signed receipt. Anyone can verify one:
 POST /v1/wallets {email?}                            -> {wallet_id, token}
 GET  /v1/wallet            Bearer wallet token        -> balance, caps, recent charges
 POST /v1/wallet/limits     Bearer wallet token        -> set max_charge_cents / daily_cap_cents
-POST /v1/topup             Bearer wallet token        -> {url} Stripe Checkout (min 500, max 20000 cents)
+POST /v1/topup             Bearer wallet token        -> {url} Stripe Checkout ({amount_cents, merchant_id?}; min = merchant's, default 500, floor 300; max 20000)
 GET  /v1/topup/claim?sid=cs_...                       -> credit a paid session (idempotent)
 POST /v1/merchants {email, name}                      -> {merchant_id, key}
-GET  /v1/merchant          Bearer merchant key        -> balance, volume, recent charges
+GET  /v1/merchant          Bearer merchant key        -> balance, volume, min_topup, recent charges
+POST /v1/merchant/limits   Bearer merchant key        -> set min_topup_cents (floor 300)
 POST /v1/charge            Bearer merchant key        -> debit wallet, credit merchant (200 | 402 | 403)
 GET  /v1/receipts?r=<receipt>                         -> public receipt verification
 GET  /demo/fortune         X-Peage-Wallet: <token>    -> 1-cent demo toll
