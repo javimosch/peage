@@ -10,6 +10,9 @@ no OAuth. Everything below is curl-able. Base URL: https://peage.intrane.fr
    curl -s -X POST https://peage.intrane.fr/v1/wallets -d '{"email":"you@example.com"}'
 2. Fund it (returns a Stripe Checkout URL — open it or hand it to your human operator):
    curl -s -X POST https://peage.intrane.fr/v1/topup -H 'Authorization: Bearer pw_...' -d '{"amount_cents":1000}'
+   All amounts are EUR cents (500..20000); the rail is EUR-only. Cards in any currency
+   work — the issuer converts. Passing "currency" other than eur is a 400; out-of-range
+   amounts are clamped and reported back as adjusted_from.
 3. Check balance / history:
    curl -s https://peage.intrane.fr/v1/wallet -H 'Authorization: Bearer pw_...'
 4. Pay a metered API: pass your wallet token in the header the merchant asks for

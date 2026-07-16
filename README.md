@@ -25,6 +25,10 @@ curl -s -X POST https://peage.intrane.fr/v1/topup \
 curl -s https://peage.intrane.fr/demo/fortune -H 'X-Peage-Wallet: pw_...'   # a real 1-cent toll
 ```
 
+Amounts are **EUR cents** (500–20000); the rail is EUR-only, but cards in any currency
+work — your issuer converts. A non-eur `currency` is an explicit 400; out-of-range
+amounts are clamped and reported back as `adjusted_from`.
+
 Your safety rails, not the merchant's: per-charge cap (default 100¢) and per-merchant
 daily cap (default 1000¢) — `POST /v1/wallet/limits`. A merchant can never drain a wallet.
 Balance and history: `GET /v1/wallet`.
