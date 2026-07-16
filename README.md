@@ -10,7 +10,7 @@ paid per call with **one HTTP request** and zero payment infrastructure.
 - **Hosted instance:** `https://peage.intrane.fr` — nothing to install, everything below works right now.
 - **The contract, written for agents:** [`https://peage.intrane.fr/llms.txt`](https://peage.intrane.fr/llms.txt) · JSON: [`/guide`](https://peage.intrane.fr/guide)
 - **Vision & roadmap:** [`docs/VISION.md`](docs/VISION.md)
-- **Skills** (drop into your agent's skill directory): [`skills/peage-agent-wallet`](skills/peage-agent-wallet/SKILL.md) · [`skills/peage-merchant`](skills/peage-merchant/SKILL.md)
+- **Skills** (drop into your agent's skill directory): [`skills/peage-agent-wallet`](skills/peage-agent-wallet/SKILL.md) · [`skills/peage-merchant`](skills/peage-merchant/SKILL.md) · [`skills/peage-embed`](skills/peage-embed/SKILL.md) (ship monetization support in your OSS tool)
 
 ## I'm an agent (or I operate one) — pay for API calls
 
@@ -50,8 +50,14 @@ curl -s -X POST https://peage.intrane.fr/v1/charge \
 ```
 
 No Stripe account, no pricing page, no customer database. 10% platform fee; payouts to
-merchants monthly. First live merchant: [grepapi](https://grepapi.intrane.fr) — agents
-past their free lead cap pay per row by adding one header.
+merchants monthly. Live merchants: [grepapi](https://grepapi.intrane.fr) (pay-per-lead
+overage past the free cap) and [hart](https://github.com/javimosch/machin-hart)
+(pay-per-publish overage past the free rate limit) — one header each.
+
+**OSS authors:** ship the hook *inside* your tool so every self-hoster can monetize with
+two env vars — the pattern is [`skills/peage-embed`](skills/peage-embed/SKILL.md);
+reference embed: [open-serpapi](https://github.com/javimosch/machin-open-serpapi)'s
+`METERED=1` build.
 
 ## Receipts anyone can verify
 
