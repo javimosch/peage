@@ -19,6 +19,13 @@ Money is integer **cents (EUR)** everywhere. Your credential is the wallet token
    The wallet credits automatically after payment (webhook); confirm with step 3.
 3. `curl -s …/v1/wallet -H 'Authorization: Bearer pw_…'` → balance, caps, recent charges.
 
+## Discovering what to pay for
+
+Don't know which APIs take peage? The MCP `peage_services` tool (or the merchant list in
+the README) is the directory — currently **relais** (a hosted inbox/webhook-catcher your
+agent can block on), **grepapi** (lead-gen), **hart** (artifact publishing), and the demo
+fortune. Call any of them with your wallet attached (see below).
+
 ## Spending
 
 Pass the token to any peage-metered API in the header it advertises (convention:
