@@ -65,5 +65,6 @@ POST /v1/holds/release     Bearer merchant key        -> cancel {hold_id}, full 
 GET  /v1/receipts?r=<receipt>                         -> public receipt verification
 GET  /v1/solvency                                     -> public solvency proof: the live ledger invariant (funded == allocated), no auth
 GET  /demo/fortune         X-Peage-Wallet: <token>    -> 1-cent demo toll
+POST /x402/verify + /x402/settle + GET /x402/supported  -> x402 facilitator (v2, v1-tolerant): scheme exact on network peage:eur, asset EUR, payload {wallet_token, idempotency_key?}; transaction = the signed receipt
 GET  /guide                                           -> this contract as JSON
 GET  /_health                                         -> liveness

@@ -99,11 +99,17 @@ the payment layer the agent web needs. Where the x402 ecosystem settles that flo
 on-chain, **peage is the same 402 primitive on prepaid fiat** — real EUR in a real
 Stripe account, no chain, no volatility, no crypto wallet for your operator to hold.
 
-- Today: peage-native 402 bodies (`{pay:{rail:"peage",url,price_cents,header}}`) that
-  any agent can act on.
-- On the roadmap: **wire-compatibility with the x402 header/body format**, so
-  x402-aware agents can pay peage merchants without knowing the difference — peage as
-  the fiat facilitator of the 402 web.
+**Live today — peage is an x402 facilitator** (v2 wire format, v1-tolerant):
+
+```sh
+curl -s https://peage.intrane.fr/x402/supported
+# scheme "exact" on network "peage:eur", asset EUR — POST /x402/verify + /x402/settle
+```
+
+Binding spec: [`specs/scheme-exact-peage.md`](specs/scheme-exact-peage.md). The demo
+resource speaks the full header flow (`PAYMENT-REQUIRED` → `PAYMENT-SIGNATURE` →
+`PAYMENT-RESPONSE`) — try it against `/demo/fortune`. `transaction` in every settlement
+is a signed receipt anyone can verify without auth.
 
 If you're building in the x402 ecosystem and want the fiat leg: javi@intrane.fr.
 

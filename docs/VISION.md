@@ -58,9 +58,10 @@ transaction volume, not with our own traffic.
    wallet holder, and every peage merchant becomes reachable from the x402 web without
    custom integration. Spike DONE (2026-07-17): the spec is LF-governed and explicitly
    rail-agnostic, Cloudflare ships a production fiat binding, and peage maps cleanly
-   (exact<->charge, upto<->holds, receipt<->transaction) — compatibility is now a
-   ~1-week job. Implement when the canonical fiat-credit binding (x402 PR #2612)
-   merges, or on first inbound x402-ecosystem interest.
+   (exact<->charge, upto<->holds, receipt<->transaction) — SHIPPED 2026-07-17 (same day):
+   live facilitator at /x402 (verify/settle/supported, v2 + v1-tolerant), binding spec
+   specs/scheme-exact-peage.md, dual-stack demo resource. Remaining: align naming when
+   the canonical fiat-credit binding (x402 PR #2612) merges; expose upto<->holds.
 
 ## Non-goals
 
