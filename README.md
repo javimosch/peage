@@ -58,6 +58,7 @@ merchants monthly. Live merchants:
 - [grepapi](https://grepapi.intrane.fr) — pay-per-lead overage past the free cap
 - [hart](https://github.com/javimosch/machin-hart) — pay-per-publish overage past the free rate limit
 - [relais](https://github.com/javimosch/relais) — *an inbox your agent can block on* (catch webhooks/OAuth callbacks); pay for a persistent inbox with one `X-Peage-Wallet` header
+- [portier](https://github.com/javimosch/portier) — *SSO for your app in one redirect* (Login-with-Google/GitHub/any-OIDC); 100 free auths, then 1 EUR per 100 via a peage wallet
 
 péage is the **pay** half of the agent web; **relais** is the **receive** half — an agent
 funds a wallet here, then spends it on any of the above.
