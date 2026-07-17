@@ -53,8 +53,11 @@ transaction volume, not with our own traffic.
    and per-merchant payout schedules. Trigger: first external merchant balance > €50 or > 3
    external merchants — whichever comes first.
 3. **Multi-currency** — only after Connect: per-currency ledgers or FX-at-topup; USD first.
-4. **Standards convergence** — track the x402/HTTP-402 ecosystem; stay wire-compatible
-   with whatever 402 body shape wins so peage-aware agents interoperate beyond peage.
+4. **x402 wire-compatibility (a MUST, and a GTM move)** — speak the x402 header/body
+   format as its fiat facilitator: every x402-aware agent becomes a potential peage
+   wallet holder, and every peage merchant becomes reachable from the x402 web without
+   custom integration. Track the spec now; implement once it stabilizes enough that
+   compatibility is a one-week job rather than a moving target.
 
 ## Non-goals
 

@@ -59,6 +59,17 @@ two env vars — the pattern is [`skills/peage-embed`](skills/peage-embed/SKILL.
 reference embed: [open-serpapi](https://github.com/javimosch/machin-open-serpapi)'s
 `METERED=1` build.
 
+## A rail you can audit
+
+Every cent is publicly accounted for — the live ledger invariant, no auth:
+
+```sh
+curl -s https://peage.intrane.fr/v1/solvency
+# {"solvent":true,"funded_cents":{...},"allocated_cents":{...}}  — recomputed per request
+```
+
+The ledger is snapshotted off-site (WAL-safe) with restore drills. Boring on purpose.
+
 ## Receipts anyone can verify
 
 Every charge returns an HMAC-signed receipt. Auditors, upstreams, or the paying human
@@ -78,12 +89,26 @@ When a caller sends no wallet, reply `HTTP 402` with a machine-readable body:
 
 Agents that speak peage read it, fund themselves, and retry. That's the whole protocol.
 
-## Why not just Stripe / crypto x402?
+## x402 — same thesis, fiat rails
+
+[x402](https://www.x402.org) is right about everything except the wallet: HTTP 402 is
+the payment layer the agent web needs. Where the x402 ecosystem settles that flow
+on-chain, **peage is the same 402 primitive on prepaid fiat** — real EUR in a real
+Stripe account, no chain, no volatility, no crypto wallet for your operator to hold.
+
+- Today: peage-native 402 bodies (`{pay:{rail:"peage",url,price_cents,header}}`) that
+  any agent can act on.
+- On the roadmap: **wire-compatibility with the x402 header/body format**, so
+  x402-aware agents can pay peage merchants without knowing the difference — peage as
+  the fiat facilitator of the 402 web.
+
+If you're building in the x402 ecosystem and want the fiat leg: javi@intrane.fr.
+
+## Why not just Stripe?
 
 Per-call card payments are impossible (fixed fees eat any sub-dollar charge), and
-subscriptions were designed for humans with dashboards. Crypto 402 rails exist but
-require wallets, chains, and volatility your operator may not want. peage keeps money
-boring — real EUR in a real Stripe account — and makes the *metering* machine-native.
+subscriptions were designed for humans with dashboards. peage keeps money
+boring — one card top-up, then machine-native metering in cents.
 
 ---
 

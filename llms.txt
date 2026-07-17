@@ -56,6 +56,7 @@ GET  /v1/merchant          Bearer merchant key        -> balance, volume, min_to
 POST /v1/merchant/limits   Bearer merchant key        -> set min_topup_cents (floor 300)
 POST /v1/charge            Bearer merchant key        -> debit wallet, credit merchant (200 | 402 | 403)
 GET  /v1/receipts?r=<receipt>                         -> public receipt verification
+GET  /v1/solvency                                     -> public solvency proof: the live ledger invariant (funded == allocated), no auth
 GET  /demo/fortune         X-Peage-Wallet: <token>    -> 1-cent demo toll
 GET  /guide                                           -> this contract as JSON
 GET  /_health                                         -> liveness
