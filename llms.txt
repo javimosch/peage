@@ -29,13 +29,17 @@ no OAuth. Everything below is curl-able. Base URL: https://peage.intrane.fr
 
 1. Register (save the key — shown once):
    curl -s -X POST https://peage.intrane.fr/v1/merchants -d '{"email":"you@example.com","name":"my api"}'
-2. Ask callers for their wallet token (header X-Peage-Wallet), then charge per request:
+2. Variable-cost call? Reserve first, settle the actual (fee on captured only):
+   curl -s -X POST https://peage.intrane.fr/v1/holds -H 'Authorization: Bearer pm_...' -d '{"wallet_token":"pw_...","amount_cents":50,"ttl_seconds":900}'
+   curl -s -X POST https://peage.intrane.fr/v1/holds/capture -H 'Authorization: Bearer pm_...' -d '{"hold_id":"h_...","amount_cents":37}'
+   (release cancels; expiry auto-refunds — a crashed merchant can never strand funds)
+3. Fixed price? Ask callers for their wallet token (header X-Peage-Wallet), then charge per request:
    curl -s -X POST https://peage.intrane.fr/v1/charge -H 'Authorization: Bearer pm_...' \
         -d '{"wallet_token":"pw_...","amount_cents":2,"memo":"GET /search","idempotency_key":"req-123"}'
    -> 200 {charge_id, receipt, wallet_balance_cents} | 402 insufficient_funds (tell the caller to top up)
-3. If the caller sent no wallet: reply HTTP 402 with a JSON body pointing here, e.g.
+4. If the caller sent no wallet: reply HTTP 402 with a JSON body pointing here, e.g.
    {"pay":{"rail":"peage","url":"https://peage.intrane.fr","price_cents":2,"header":"X-Peage-Wallet"}}
-4. Your balance / volume:
+5. Your balance / volume:
    curl -s https://peage.intrane.fr/v1/merchant -H 'Authorization: Bearer pm_...'
    Payouts are manual at month end (operator-run). Platform fee: 10% per charge.
 
@@ -55,6 +59,9 @@ POST /v1/merchants {email, name}                      -> {merchant_id, key}
 GET  /v1/merchant          Bearer merchant key        -> balance, volume, min_topup, recent charges
 POST /v1/merchant/limits   Bearer merchant key        -> set min_topup_cents (floor 300)
 POST /v1/charge            Bearer merchant key        -> debit wallet, credit merchant (200 | 402 | 403)
+POST /v1/holds             Bearer merchant key        -> reserve {wallet_token, amount_cents, ttl_seconds?} for variable-cost calls (escrow; auto-refunds at expiry, default 900s)
+POST /v1/holds/capture     Bearer merchant key        -> settle {hold_id, amount_cents<=held}: fee on captured only, remainder refunds, returns a signed receipt
+POST /v1/holds/release     Bearer merchant key        -> cancel {hold_id}, full refund
 GET  /v1/receipts?r=<receipt>                         -> public receipt verification
 GET  /v1/solvency                                     -> public solvency proof: the live ledger invariant (funded == allocated), no auth
 GET  /demo/fortune         X-Peage-Wallet: <token>    -> 1-cent demo toll

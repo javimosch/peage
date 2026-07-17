@@ -43,6 +43,25 @@ Rules of thumb:
 - Batch when natural: one charge for N rows (`"memo":"ingest x50"`) beats N charges.
 - `memo` ≤ 200 chars, shows up in the caller's history — make it self-explanatory.
 
+## Variable-cost calls: hold -> capture
+
+When the price isn't known up front (LLM tokens, browser minutes, human tasks):
+
+```sh
+# reserve the max (escrow; auto-refunds at ttl if you crash)
+curl -s -X POST https://peage.intrane.fr/v1/holds \
+  -H "Authorization: Bearer $PEAGE_MERCHANT_KEY" \
+  -d '{"wallet_token":"pw_...","amount_cents":50,"ttl_seconds":900,"idempotency_key":"job-1"}'
+# do the work, then settle the actual (fee on captured only; remainder refunds)
+curl -s -X POST https://peage.intrane.fr/v1/holds/capture \
+  -H "Authorization: Bearer $PEAGE_MERCHANT_KEY" -d '{"hold_id":"h_...","amount_cents":37}'
+# or cancel: POST /v1/holds/release {hold_id}
+```
+
+Capture returns a normal signed receipt. Rules: hold before starting the work; capture
+or release promptly (an expired hold refunds the caller in full — never rely on expiry
+as your happy path); the caller's per-charge and daily caps apply to the HELD amount.
+
 ## Advertise the rail (HTTP 402)
 
 When a request arrives with no wallet header, respond `402` with:

@@ -47,6 +47,9 @@ curl -s -X POST https://peage.intrane.fr/v1/charge \
   -d '{"wallet_token":"pw_...","amount_cents":2,"memo":"GET /search","idempotency_key":"req-123"}'
 # 200 -> {charge_id, receipt, wallet_balance_cents}
 # 402 -> insufficient funds, body tells the caller exactly how to top up (relay it verbatim)
+
+# variable cost? reserve the max, settle the actual (fee on captured only, rest refunds):
+#   POST /v1/holds {wallet_token, amount_cents, ttl_seconds}  ->  POST /v1/holds/capture
 ```
 
 No Stripe account, no pricing page, no customer database. 10% platform fee; payouts to
