@@ -56,8 +56,11 @@ transaction volume, not with our own traffic.
 4. **x402 wire-compatibility (a MUST, and a GTM move)** — speak the x402 header/body
    format as its fiat facilitator: every x402-aware agent becomes a potential peage
    wallet holder, and every peage merchant becomes reachable from the x402 web without
-   custom integration. Track the spec now; implement once it stabilizes enough that
-   compatibility is a one-week job rather than a moving target.
+   custom integration. Spike DONE (2026-07-17): the spec is LF-governed and explicitly
+   rail-agnostic, Cloudflare ships a production fiat binding, and peage maps cleanly
+   (exact<->charge, upto<->holds, receipt<->transaction) — compatibility is now a
+   ~1-week job. Implement when the canonical fiat-credit binding (x402 PR #2612)
+   merges, or on first inbound x402-ecosystem interest.
 
 ## Non-goals
 
