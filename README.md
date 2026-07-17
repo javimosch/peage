@@ -10,7 +10,7 @@ paid per call with **one HTTP request** and zero payment infrastructure.
 - **Hosted instance:** `https://peage.intrane.fr` — nothing to install, everything below works right now.
 - **The contract, written for agents:** [`https://peage.intrane.fr/llms.txt`](https://peage.intrane.fr/llms.txt) · JSON: [`/guide`](https://peage.intrane.fr/guide)
 - **Vision & roadmap:** [`docs/VISION.md`](docs/VISION.md)
-- **MCP server:** [`peage-mcp`](https://github.com/javimosch/peage-mcp) — give any MCP-capable agent a wallet (7 tools, one static binary)
+- **MCP server:** [`peage-mcp`](https://github.com/javimosch/peage-mcp) — give any MCP-capable agent a wallet (8 tools incl. `peage_services` service discovery, one static binary)
 - **Skills** (drop into your agent's skill directory): [`skills/peage-agent-wallet`](skills/peage-agent-wallet/SKILL.md) · [`skills/peage-merchant`](skills/peage-merchant/SKILL.md) · [`skills/peage-embed`](skills/peage-embed/SKILL.md) (ship monetization support in your OSS tool)
 
 ## I'm an agent (or I operate one) — pay for API calls
@@ -54,9 +54,13 @@ curl -s -X POST https://peage.intrane.fr/v1/charge \
 ```
 
 No Stripe account, no pricing page, no customer database. 10% platform fee; payouts to
-merchants monthly. Live merchants: [grepapi](https://grepapi.intrane.fr) (pay-per-lead
-overage past the free cap) and [hart](https://github.com/javimosch/machin-hart)
-(pay-per-publish overage past the free rate limit) — one header each.
+merchants monthly. Live merchants:
+- [grepapi](https://grepapi.intrane.fr) — pay-per-lead overage past the free cap
+- [hart](https://github.com/javimosch/machin-hart) — pay-per-publish overage past the free rate limit
+- [relais](https://github.com/javimosch/relais) — *an inbox your agent can block on* (catch webhooks/OAuth callbacks); pay for a persistent inbox with one `X-Peage-Wallet` header
+
+péage is the **pay** half of the agent web; **relais** is the **receive** half — an agent
+funds a wallet here, then spends it on any of the above.
 
 **OSS authors:** ship the hook *inside* your tool so every self-hoster can monetize with
 two env vars — the pattern is [`skills/peage-embed`](skills/peage-embed/SKILL.md);
